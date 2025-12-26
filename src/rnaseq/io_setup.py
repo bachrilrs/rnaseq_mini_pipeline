@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 
 
-
 def load_counts(file_path: str, pattern: str , sep='\t'):
     """
     Load RNA-seq count data from a tab-delimited file and process sample IDs.
@@ -46,14 +45,13 @@ def load_counts(file_path: str, pattern: str , sep='\t'):
         raise ValueError("Gene IDs are not unique in the DataFrame index.")
     return df , ids
 
-
-def load_samples(series_matrix_path: str,sample_ids: list[str], quoted_pattern: str = r'".*?"') -> pd.DataFrame:
+def load_samples(sample_file: str, sample_ids: list[str], quoted_pattern: str = r'".*?"') -> pd.DataFrame:
     """
     Load and construct a clean sample annotation table from a GEO series_matrix file.
 
     Parameters
     ----------
-    series_matrix_path : str
+    sample_file : str
         Path to the GEO series_matrix file.
     sample_ids : list[str]
         Biological sample IDs extracted from the count matrix (e.g. DG, DH, ..., LF).
@@ -136,11 +134,9 @@ if __name__ == '__main__':
 
     samples = load_samples(sample_file, ids)
 
-
-    for cond, sub in samples.groupby("condition"):
-        print(sub)
-
     df.to_csv('data/counts.csv' ,index=True)
     samples.to_csv('data/samples.csv' ,index=False)
+    print(df[df.sum(axis=1) != 0].shape[0])
+    print(df.shape[0])
 
     print("Counts and samples loaded successfully.")
