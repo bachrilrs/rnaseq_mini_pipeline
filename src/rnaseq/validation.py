@@ -89,12 +89,5 @@ def validate_data(counts_df: pd.DataFrame, samples_df: pd.DataFrame, expected_co
         extra_in_meta = meta_samples - counts_samples
         raise ValueError(
             "Mismatch between counts columns and samples table. "
-            f"Missing in samples: {sorted(missing_in_meta)}; Extra in samples: {sorted(extra_in_meta)}"
-<<<<<<< HEAD
-        )
+            f"Missing in samples: {sorted(missing_in_meta)}; Extra in samples: {sorted(extra_in_meta)}")
 
-
-
-=======
-        )
->>>>>>> feature/io-loading
