@@ -1,6 +1,6 @@
 src/rnaseq/
 .venv*
-
+output/
 __pycache__/
 *.pyc
 .env
@@ -9,3 +9,4 @@ __pycache__/
 .vscode/docs/
 .vscode
 docs
+src/rnaseq_mini_pipeline.egg-info/

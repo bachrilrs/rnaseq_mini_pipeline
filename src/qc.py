@@ -37,7 +37,7 @@ def zero_fraction(counts_df: pd.DataFrame , axis=0):
     float
         Percentage (0–100) of samples (axis=0) or genes (axis=1) whose total count equals 0.
     """
-    return (counts_df.eq(0).mean(axis=0) * 100)
+    return round((counts_df.eq(0).mean(axis=0) * 100),2)
 
 def expressed_gene(counts_df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -182,6 +182,7 @@ def qc_all(counts_df: pd.DataFrame, samples_df: pd.DataFrame, output_dir: str) -
     plot_sample_correlation(counts_df, qc_dir)
 
     qc_df = build_qc_table(counts_df, samples_df)
+    qc_df.index.name = "sample_id"
     save_qc_table(qc_df, output_dir)
 
     return qc_df

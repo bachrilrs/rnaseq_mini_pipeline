@@ -39,7 +39,6 @@ def normalize_and_validate_counts(counts_df: pd.DataFrame) -> pd.DataFrame:
 
     return counts_df
 
-
 def normalize_and_validate_samples(samples_df: pd.DataFrame, counts_df: pd.DataFrame) -> pd.DataFrame:
     """
     Normalize and validate a samples DataFrame against counts_df.
@@ -83,6 +82,7 @@ def normalize_and_validate_samples(samples_df: pd.DataFrame, counts_df: pd.DataF
 
     # reorder rows to match counts_df columns
     samples_df = samples_df.set_index("sample_id").loc[counts_samples].reset_index()
+
     return samples_df
 
 def load_counts_tsv(file_path: str, pattern: str , sep='\t',gene_id_candidates = ["EntrezGeneID", "GeneID", "gene_id"]) -> pd.DataFrame:
@@ -216,18 +216,3 @@ def load_samples_geo_series(sample_file: str, counts_df: pd.DataFrame,samples_pa
         "geo_accession": geo_accessions
     })
     return normalize_and_validate_samples(samples_df , counts_df)
-
-# if __name__ == '__main__':
-#     print("Loading counts and samples...")
-
-#     counts_file = "data/GSE60450_Lactation-GenewiseCounts.txt"
-#     series_matrix_file = "data/GSE60450_series_matrix.txt"
-
-
-#     counts_df = load_counts_tsv(counts_file, pattern)
-#     samples_df = load_samples_geo_series(series_matrix_file, counts_df)
-
-#     counts_df.to_csv("data/counts.csv")
-#     samples_df.to_csv("data/samples.csv", index=False)
-
-#     print("Counts and samples loaded successfully.")
