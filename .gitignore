@@ -1,10 +1,8 @@
-.env_rna
-.venv_rna/
-.vscode 
-.DS_Store
-.env
-notes_projet.txt
+src/rnaseq/
+.venv/
 __pycache__/
 *.pyc
-docs
-output/
+.env
+.ipynb_checkpoints
+.DS_Store
+.vscode/
