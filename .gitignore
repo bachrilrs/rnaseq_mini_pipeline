@@ -1,0 +1,8 @@
+src/rnaseq/
+.venv/
+__pycache__/
+*.pyc
+.env
+.ipynb_checkpoints
+.DS_Store
+.vscode/
