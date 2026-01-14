@@ -74,22 +74,6 @@ def log_transform(counts_df, base="log1p"):
     else:
         raise ValueError("Unsupported log base. Use 'log1p' 'log10' or 'log2'.")
 
-def plot_library_size(counts_df: pd.DataFrame,samples_df: pd.DataFrame,output_dir: str) -> None:
-    os.makedirs(output_dir, exist_ok=True)
-
-    libsize = library_size(counts_df)
-    plot_df = pd.DataFrame({"sample_id": libsize.index,"library_size": libsize.values}).merge(samples_df[["sample_id", "condition"]],on="sample_id")
-
-    plt.figure(figsize=(10, 6))
-    sns.barplot(data=plot_df, x="sample_id", y="library_size", hue="condition")
-    plt.xticks(rotation=90)
-    plt.title("Library size per sample")
-    plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, "library_size.png"))
-    plt.close()
-
-
-
 def plot_log_boxplot(counts_df: pd.DataFrame,output_dir: str) -> None:
     os.makedirs(output_dir, exist_ok=True)
 
@@ -102,6 +86,20 @@ def plot_log_boxplot(counts_df: pd.DataFrame,output_dir: str) -> None:
     plt.title("Log-transformed count distribution")
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir, "log_counts_boxplot.png"))
+    plt.close()
+
+def plot_library_size(counts_df: pd.DataFrame,samples_df: pd.DataFrame,output_dir: str) -> None:
+    os.makedirs(output_dir, exist_ok=True)
+
+    libsize = library_size(counts_df)
+    plot_df = pd.DataFrame({"sample_id": libsize.index,"library_size": libsize.values}).merge(samples_df[["sample_id", "condition"]],on="sample_id")
+
+    plt.figure(figsize=(10, 6))
+    sns.barplot(data=plot_df, x="sample_id", y="library_size", hue="condition")
+    plt.xticks(rotation=90)
+    plt.title("Library size per sample")
+    plt.tight_layout()
+    plt.savefig(os.path.join(output_dir, "library_size.png"))
     plt.close()
 
 
@@ -176,7 +174,7 @@ def qc_all(counts_df: pd.DataFrame, samples_df: pd.DataFrame, output_dir: str) -
     output_dir : str
         Directory to save QC output files.  
     """
-    
+
     qc_dir = os.path.join(output_dir, "qc")
 
     plot_library_size(counts_df, samples_df, qc_dir)
