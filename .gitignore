@@ -5,4 +5,6 @@ __pycache__/
 .env
 .ipynb_checkpoints
 .DS_Store
-.vscode/
+.vscode/docs/
+.vscode
+docs
