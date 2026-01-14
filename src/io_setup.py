@@ -85,7 +85,6 @@ def normalize_and_validate_samples(samples_df: pd.DataFrame, counts_df: pd.DataF
     samples_df = samples_df.set_index("sample_id").loc[counts_samples].reset_index()
     return samples_df
 
-
 def load_counts_tsv(file_path: str, pattern: str , sep='\t',gene_id_candidates = ["EntrezGeneID", "GeneID", "gene_id"]) -> pd.DataFrame:
     """
     Load RNA-seq count data from a tab-delimited file and process sample IDs.
@@ -116,8 +115,8 @@ def load_counts_tsv(file_path: str, pattern: str , sep='\t',gene_id_candidates =
             counts_df.drop(columns=col, inplace=True)
     
     # set gene_id as index
-    df = df.set_index(gene_id_col)
-    df.index.name = "gene_id"
+    counts_df = counts_df.set_index(gene_id_col)
+    counts_df.index.name = "gene_id"
 
     # Extract biological sample IDs using the provided pattern
 
@@ -139,11 +138,11 @@ def load_counts_tsv(file_path: str, pattern: str , sep='\t',gene_id_candidates =
     counts_df = counts_df.astype(np.int64)
     return normalize_and_validate_counts(counts_df)
 
-def load_samples_csv(sample_file: str,counts_df: pd.DataFrame,separator: str = ",") -> pd.DataFrame:
+def load_samples_csv(sample_file: str,counts_df: pd.DataFrame, separator: str = ",") -> pd.DataFrame:
     samples_df = pd.read_csv(sample_file, sep=separator)
     return normalize_and_validate_samples(samples_df, counts_df)
 
-def load_samples_geo_series(sample_file: str,counts_df: pd.DataFrame,quoted_pattern: str = r'".*?"')-> pd.DataFrame:
+def load_samples_geo_series(sample_file: str, counts_df: pd.DataFrame,samples_pattern: str = r'".*?"')-> pd.DataFrame:
     """
     Load and construct a clean sample annotation table from a GEO series_matrix file.
 
@@ -154,7 +153,7 @@ def load_samples_geo_series(sample_file: str,counts_df: pd.DataFrame,quoted_patt
     sample_ids : list[str]
         Biological sample IDs extracted from the count matrix (e.g. DG, DH, ..., LF).
         These are used as the primary sample identifiers.
-    quoted_pattern : str
+    samples_pattern : str
         Regex pattern used to extract quoted fields from GEO lines.
 
     Returns
@@ -174,7 +173,7 @@ def load_samples_geo_series(sample_file: str,counts_df: pd.DataFrame,quoted_patt
     with open(sample_file , 'r') as fh:
         for line in fh:
             if line.startswith('!Series_sample_i'):
-                matches = re.findall(quoted_pattern, line)
+                matches = re.findall(samples_pattern, line)
                 if not matches:
                     raise ValueError("No GEO accessions found in Series_sample_id line.")
                 if len(matches) == 1:
@@ -218,17 +217,17 @@ def load_samples_geo_series(sample_file: str,counts_df: pd.DataFrame,quoted_patt
     })
     return normalize_and_validate_samples(samples_df , counts_df)
 
-if __name__ == '__main__':
-    print("Loading counts and samples...")
+# if __name__ == '__main__':
+#     print("Loading counts and samples...")
 
-    counts_file = "data/GSE60450_Lactation-GenewiseCounts.txt"
-    series_matrix_file = "data/GSE60450_series_matrix.txt"
-    pattern = r"^MCL1-([A-Z]{2})_"
+#     counts_file = "data/GSE60450_Lactation-GenewiseCounts.txt"
+#     series_matrix_file = "data/GSE60450_series_matrix.txt"
 
-    counts_df = load_counts_tsv(counts_file, pattern)
-    samples_df = load_samples_geo_series(series_matrix_file, counts_df)
 
-    counts_df.to_csv("data/counts.csv")
-    samples_df.to_csv("data/samples.csv", index=False)
+#     counts_df = load_counts_tsv(counts_file, pattern)
+#     samples_df = load_samples_geo_series(series_matrix_file, counts_df)
 
-    print("Counts and samples loaded successfully.")
+#     counts_df.to_csv("data/counts.csv")
+#     samples_df.to_csv("data/samples.csv", index=False)
+
+#     print("Counts and samples loaded successfully.")

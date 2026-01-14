@@ -13,12 +13,13 @@ input:
       - "EntrezGeneID"
       - "GeneID"
       - "gene_id"
-    sample_id_regex: "^MCL1-([A-Z]{2})_"
+    counts_pattern: "^MCL1-([A-Z]{2})_"
 
   samples:
     type: "geo_series_matrix"
     path: "data/GSE60450_series_matrix.txt"
-    quoted_pattern: '".*?"'
+    samples_pattern: '".*?"'
+    expected_conditions: ["virgin", "lactation"]
 
 canonical:
   counts:
