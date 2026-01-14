@@ -1,0 +1,47 @@
+run:
+  name: "GSE60450_qc"
+  date: "2026-01-14"
+  pipeline_version: "0.1.0"
+  description: "Quality control analysis for GEO series GSE60450"
+
+input:
+  counts:
+    type: "tsv"
+    path: "data/GSE60450_Lactation-GenewiseCounts.txt"
+    sep: "\t"
+    gene_id_candidates:
+      - "EntrezGeneID"
+      - "GeneID"
+      - "gene_id"
+    sample_id_regex: "^MCL1-([A-Z]{2})_"
+
+  samples:
+    type: "geo_series_matrix"
+    path: "data/GSE60450_series_matrix.txt"
+    quoted_pattern: '".*?"'
+
+canonical:
+  counts:
+    dtype: "int"
+    allow_na: false
+
+  samples:
+    required_columns:
+      - "sample_id"
+      - "condition"
+      - "replicate"
+
+qc:
+  log_transform: "log1p"
+  plots:
+    library_size: true
+    log_boxplot: true
+    correlation: true
+
+output:
+  base_dir: "output/GSE60450_qc"
+  qc_subdir: "qc"
+
+database:
+  enabled: false
+  schema: "rnaseq"
