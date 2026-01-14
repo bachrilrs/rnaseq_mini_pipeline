@@ -1,0 +1,10 @@
+.env_rna
+.venv_rna/
+.vscode 
+.DS_Store
+.env
+notes_projet.txt
+__pycache__/
+*.pyc
+docs
+output/

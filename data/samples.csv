@@ -1,0 +1,13 @@
+sample_id,condition,replicate,geo_accession
+DG,virgin,1,GSM1480291
+DH,virgin,2,GSM1480292
+DI,virgin,3,GSM1480293
+DJ,virgin,4,GSM1480294
+DK,virgin,5,GSM1480295
+DL,virgin,6,GSM1480296
+LA,lactation,1,GSM1480297
+LB,lactation,2,GSM1480298
+LC,lactation,3,GSM1480299
+LD,lactation,4,GSM1480300
+LE,lactation,5,GSM1480301
+LF,lactation,6,GSM1480302
