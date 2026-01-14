@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
+import yaml
 from io_setup import *
 from validation import *
 from qc import * 
-import yaml
 from pathlib import Path
-from pprint import pprint
+
 
 def load_config(config_path: str) -> dict:
     """
@@ -47,27 +47,34 @@ def validate_config_structure(config: dict) -> None:
     if missing:
         raise ValueError(f"Missing required config sections: {missing}")
 
-config = load_config("config.yaml")
-validate_config_structure(config)
+def run_pipeline() -> None:
+    config = load_config("config.yaml")
+    validate_config_structure(config)
 
-counts_cfg = config["input"]["counts"]
-samples_cfg = config["input"]["samples"]
+    counts_cfg = config["input"]["counts"]
+    samples_cfg = config["input"]["samples"]
 
-counts_df = load_counts_tsv(file_path=counts_cfg["path"], pattern=counts_cfg["counts_pattern"], sep=counts_cfg.get("sep","\t"),
-        gene_id_candidates=counts_cfg.get("gene_id_candidates", ["EntrezGeneID", "GeneID", "gene_id"]))
-samples_df = load_samples_geo_series(sample_file=samples_cfg["path"], counts_df=counts_df , samples_pattern=samples_cfg["samples_pattern"])
-
-
-validate_counts(counts_df)
-validate_samples(samples_df, expected_conditions=set(samples_cfg["expected_conditions"]))
+    counts_df = load_counts_tsv(file_path=counts_cfg["path"], pattern=counts_cfg["counts_pattern"], sep=counts_cfg.get("sep","\t"),
+            gene_id_candidates=counts_cfg.get("gene_id_candidates", ["EntrezGeneID", "GeneID", "gene_id"]))
+    samples_df = load_samples_geo_series(sample_file=samples_cfg["path"], counts_df=counts_df , samples_pattern=samples_cfg["samples_pattern"])
 
 
+    validate_counts(counts_df)
+    validate_samples(samples_df, expected_conditions=set(samples_cfg["expected_conditions"]))
 
+    qc_all(counts_df, samples_df, output_dir=config["output"]["base_dir"])
 
 def main():
-    # TODO: implement main function if needed
+    """
+    Main function to run the RNA-seq QC pipeline based on a configuration file.
+    Parameters: None
+    """
+    run_pipeline()
     
-    pass
+    
 
 
+if __name__ == "__main__":
+    main()
+    print("RNA-seq QC pipeline completed successfully.")
 
