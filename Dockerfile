@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY pyproject.toml /app/pyproject.toml
 COPY src/ /app/src/
 
-WORKDIR /app
+
 COPY . /app
 # Install the package
 RUN pip install --upgrade pip setuptools \

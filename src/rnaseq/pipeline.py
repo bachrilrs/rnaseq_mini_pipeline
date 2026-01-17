@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
-
 import yaml
+import time
 from rnaseq.io_setup import *
 from rnaseq.validation import *
 from rnaseq.qc import * 
 from pathlib import Path
-
 
 def load_config(config_path: str) -> dict:
     """
@@ -48,7 +47,11 @@ def validate_config_structure(config: dict) -> None:
         raise ValueError(f"Missing required config sections: {missing}")
 
 def run_pipeline() -> None:
-    config = load_config("config.yaml")
+    """
+    Run the RNA-seq QC pipeline based on a configuration file.
+
+    """
+    config = load_config("/app/config.yaml")
     validate_config_structure(config)
 
     counts_cfg = config["input"]["counts"]
@@ -69,11 +72,17 @@ def main():
     Main function to run the RNA-seq QC pipeline based on a configuration file.
     Parameters: None
     """
-    run_pipeline()
-    
-    
-
-
+    while True:
+        try:
+            print("Starting QC Pipeline...")
+            run_pipeline()
+            print("Pipeline finished. Waiting 10 minutes...")
+            # This keeps the container ALIVE so you can always 'exec' into it
+            time.sleep(600) # Wait 10 minutes before next run
+        except Exception as e:
+            print(f"Error occurred: {e}")
+            time.sleep(30) # Wait before retrying
+   
 if __name__ == "__main__":
     main()
     print("RNA-seq QC pipeline completed successfully.")

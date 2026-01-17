@@ -20,7 +20,8 @@ dependencies = [
     "scikit-learn>=1.2.0",
     "sqlalchemy>=1.4.0",
     "psycopg2-binary>=2.9.0",
-    "pyyaml>=6.0"
+    "pyyaml>=6.0",
+    "PyYAML>=5.4.1"
 ]
 
 [tool.setuptools]

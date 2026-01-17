@@ -1,49 +1,40 @@
 services:
   db:
     image: postgres:16
+    container_name: rnaseq_db
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - .:/app
     ports:
       - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-      interval: 5s
+      interval: 10s
       timeout: 5s
-      retries: 20
+      retries: 5
 
   pipeline:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
+    build: . 
+    container_name: rnaseq_pipeline
+    tty: true  # This keeps the container "awake" even after the script finishes
     depends_on:
       db:
-        condition: service_healthy
-    environment:
-      DB_HOST: db
-      DB_PORT: "5432"
-      DB_NAME: ${POSTGRES_DB}
+        condition: service_healthy  # Wait for DB to be ready
+    environment: 
+      # Pass environment variables that match your db_config.yaml
       DB_USER: ${POSTGRES_USER}
       DB_PASSWORD: ${POSTGRES_PASSWORD}
-      DATA_DIR: /app/data/raw
-      OUT_DIR: /app/data/processed
-      REPORTS_DIR: /app/reports
-      CONTRAST_A: lactation
-      CONTRAST_B: virgin
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
     volumes:
-      - ./data:/app/data
-      - ./reports:/app/reports
-      - ./sql:/app/sql:ro
-      - ./r:/app/r:ro
-    command: >
-      bash -lc "
-        python -m rnaseq.cli init-db --schema /app/sql/schema.sql &&
-        python -m rnaseq.cli run --data-dir /app/data/raw --out-dir /app/data/processed &&
-        Rscript /app/r/render_report.R /app/reports/report.Rmd /app/reports/report.pdf
-      "
+      - .:/app  # Mount your source code if needed
+    working_dir: /app
+    command: python -m rnaseq.pipeline --config /app/config.yml
 
 volumes:
-  pgdata:
+  pgdata: 

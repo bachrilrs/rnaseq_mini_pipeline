@@ -3,7 +3,6 @@ import re
 import pandas as pd
 import numpy as np
 
-
 def normalize_and_validate_counts(counts_df: pd.DataFrame) -> pd.DataFrame:
     """
     Validate counts matrix canonical format:
@@ -12,7 +11,7 @@ def normalize_and_validate_counts(counts_df: pd.DataFrame) -> pd.DataFrame:
     - values = integers >= 0
     - no missing values
     """
-    if counts_df.index.name is None:
+    if counts_df.index.name is None: 
         raise ValueError("counts_df index must be gene_id (index name is None)")
 
     if counts_df.index.isna().any():
@@ -31,7 +30,7 @@ def normalize_and_validate_counts(counts_df: pd.DataFrame) -> pd.DataFrame:
         raise ValueError("Missing values found in counts_df")
 
     # ensure integer + non-negative
-    if not all(pd.api.types.is_integer_dtype(counts_df[c]) for c in counts_df.columns):
+    if not all(pd.api.types.is_integer_dtype(counts_df[c]) for c in counts_df.columns): # ensure all columns are integer dtype
         raise ValueError("Counts must be integer-valued")
 
     if (counts_df < 0).any().any():
@@ -71,7 +70,7 @@ def normalize_and_validate_samples(samples_df: pd.DataFrame, counts_df: pd.DataF
     counts_samples = list(counts_df.columns)
     meta_samples = list(samples_df["sample_id"])
 
-    if set(counts_samples) != set(meta_samples):
+    if set(counts_samples) != set(meta_samples): # exact match
         missing_in_meta = set(counts_samples) - set(meta_samples)
         extra_in_meta = set(meta_samples) - set(counts_samples)
         raise ValueError(
@@ -133,12 +132,11 @@ def load_counts_tsv(file_path: str, pattern: str , sep='\t',gene_id_candidates =
     if len(set(sample_ids)) != len(sample_ids):
         raise ValueError("Duplicate sample IDs found after extraction.")
     
-
     counts_df.columns = sample_ids
     counts_df = counts_df.astype(np.int64)
     return normalize_and_validate_counts(counts_df)
 
-def load_samples_csv(sample_file: str,counts_df: pd.DataFrame, separator: str = ",") -> pd.DataFrame:
+def load_samples_csv(sample_file: str, counts_df: pd.DataFrame, separator: str = ",") -> pd.DataFrame:
     samples_df = pd.read_csv(sample_file, sep=separator)
     return normalize_and_validate_samples(samples_df, counts_df)
 
@@ -169,9 +167,9 @@ def load_samples_geo_series(sample_file: str, counts_df: pd.DataFrame,samples_pa
     sample_ids = list(counts_df.columns)
     
     geo_accessions = None
-    
+
     with open(sample_file , 'r') as fh:
-        for line in fh:
+        for line in fh: # parse series_matrix file to find Series_sample_id line
             if line.startswith('!Series_sample_i'):
                 matches = re.findall(samples_pattern, line)
                 if not matches:

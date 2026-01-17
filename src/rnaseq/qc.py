@@ -6,7 +6,6 @@ import seaborn as sns
 import numpy as np
 import os 
 
-
 from rnaseq.io_setup import *
 
 def library_size(df):
@@ -35,7 +34,7 @@ def zero_fraction(counts_df: pd.DataFrame , axis=0):
     Returns
     -------
     float
-        Percentage (0–100) of samples (axis=0) or genes (axis=1) whose total count equals 0.
+        Percentage (0-100) of samples (axis=0) or genes (axis=1) whose total count equals 0.
     """
     return round((counts_df.eq(0).mean(axis=0) * 100),2)
 
@@ -102,7 +101,6 @@ def plot_library_size(counts_df: pd.DataFrame,samples_df: pd.DataFrame,output_di
     plt.savefig(os.path.join(output_dir, "library_size.png"))
     plt.close()
 
-
 def plot_sample_correlation(counts_df: pd.DataFrame,output_dir: str) -> pd.DataFrame:
     os.makedirs(output_dir, exist_ok=True)
 
@@ -110,7 +108,7 @@ def plot_sample_correlation(counts_df: pd.DataFrame,output_dir: str) -> pd.DataF
 
     plt.figure(figsize=(8, 8))
     sns.heatmap(corr_df, cmap="coolwarm", square=True)
-    plt.title("Sample–sample correlation")
+    plt.title("Sample-sample correlation")
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir, "sample_correlation.png"))
     plt.close()
@@ -159,7 +157,7 @@ def save_qc_table(qc_df: pd.DataFrame,output_dir: str,filename: str = "qc_table.
     os.makedirs(output_dir, exist_ok=True)
     out_path = os.path.join(output_dir, filename) # join the directory and filename
     
-    qc_df.to_csv(out_path, index=True)
+    qc_df.to_csv(out_path, index=True) # save with index (sample_id)
 
 def qc_all(counts_df: pd.DataFrame, samples_df: pd.DataFrame, output_dir: str) -> pd.DataFrame:
     """
