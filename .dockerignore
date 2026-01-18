@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pytest_cache/
+.venv/
+.venv_rna/
+venv/
+
+# Git
+.git/
+.gitignore
+
+# Outputs / data (à adapter)
+output/
+reports/
+*.png
+*.pdf
+
+# OS / IDE
+.DS_Store
+.vscode/
+.idea/
+
+pgdata/
+
+LICENSE
+README.md
+requirements.txt
