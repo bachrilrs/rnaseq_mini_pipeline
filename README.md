@@ -76,7 +76,7 @@ SELECT * FROM samples LIMIT 5;
 -- Quitter la console
 \q
 
-## 🛡️ Sécurité des Injections SQL
+## Sécurité des Injections SQL
 
 Lors de l'insertion des données dans la base PostgreSQL, le pipeline utilise des requêtes paramétrées avec `psycopg2` pour prévenir les risques d'injection SQL.
 Par exemple, au lieu de construire une requête SQL en concaténant des chaînes de caractères, le code utilise des placeholders `%s` :
