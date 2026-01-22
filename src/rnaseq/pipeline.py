@@ -4,7 +4,9 @@ import time
 from rnaseq.io_setup import *
 from rnaseq.validation import *
 from rnaseq.qc import * 
+from rnaseq.db_setup import *
 from pathlib import Path
+
 
 def load_config(config_path: str) -> dict:
     """
@@ -72,18 +74,20 @@ def main():
     Main function to run the RNA-seq QC pipeline based on a configuration file.
     Parameters: None
     """
-    while True:
-        try:
-            print("Starting QC Pipeline...")
-            run_pipeline()
-            print("Pipeline finished. Waiting 10 minutes...")
-            # This keeps the container ALIVE so you can always 'exec' into it
-            time.sleep(600) # Wait 10 minutes before next run
-        except Exception as e:
-            print(f"Error occurred: {e}")
-            time.sleep(30) # Wait before retrying
-   
+    try:
+        print("Starting Pipeline")
+        run_pipeline()
+        
+        # Supprime le message "Waiting 10 minutes"
+        print("Exporting results to PostgreSQL...")
+        run_database()
+        
+        print("Pipeline execution completed successfully.")
+        # Le script va maintenant s'arrêter ici et rendre la main à entrypoint.sh
+
+    except Exception as e:
+        print(f"Error occurred: {e}")
+        # Optionnel : ne pas mettre de sleep ici non plus pour voir l'erreur de suite
+
 if __name__ == "__main__":
     main()
-    print("RNA-seq QC pipeline completed successfully.")
-

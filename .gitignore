@@ -1,11 +1,18 @@
-.venv*
-output/
+# Python
 __pycache__/
 *.pyc
+.venv*
+*.egg-info/
+
+# Environnement
 .env
+# .env.template ne doit PAS être ici
+
+# Data & Reports
+output/
 .ipynb_checkpoints
+
+# IDE / OS
 .DS_Store
-.vscode/docs/
-.vscode
-docs
-src/rnaseq_mini_pipeline.egg-info/
+.vscode/
+.idea/

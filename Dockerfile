@@ -1,29 +1,29 @@
-FROM python:3.11-slim 
-# don't generate .pyc files and don't buffer stdout/stderr
+FROM python:3.11-slim
+
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-#everything will be run from /app
-WORKDIR /app  
+WORKDIR /app
 
+# 1. Installation des dépendances système (Indispensable pour pandas/scikit-learn)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
+    g++ \
     libpq-dev \
-  && rm -rf /var/lib/apt/lists/*
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install pip requirements
-COPY pyproject.toml /app/pyproject.toml
-COPY src/ /app/src/
+# 2. Copie des fichiers nécessaires au build
+COPY pyproject.toml .
+COPY src/ ./src/
 
+# 3. Installation du projet (C'est ici que ça échouait)
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir .
 
-COPY . /app
-# Install the package
-RUN pip install --upgrade pip setuptools \
-  && pip install --no-cache-dir .
+# 4. Copie du reste (config, scripts)
+COPY . .
 
-# Copy config and create output directory
-COPY config.yaml /app/config.yaml
-RUN mkdir -p /app/output
+RUN chmod +x /app/entrypoint.sh
 
-# Set the default command to run the pipeline
-CMD ["python", "-m", "rnaseq.pipeline", "--config", "/app/config.yml"]
+ENTRYPOINT ["/app/entrypoint.sh"]

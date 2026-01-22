@@ -136,7 +136,7 @@ def build_qc_table(counts_df, samples_df) -> pd.DataFrame:
     qc_df = samples_df.copy()
     qc_df["library_size"] = library_size(counts_df)
     qc_df["zero_fraction"] = zero_fraction(counts_df)
-    qc_df["expressed_gene"] = expressed_gene(counts_df)
+    qc_df["expressed_genes"] = expressed_gene(counts_df)
 
     if qc_df.isna().any().any():
         raise ValueError("QC table contains missing values")
