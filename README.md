@@ -43,7 +43,7 @@ Le projet a été conçu pour être testé en une seule commande. Aucun prérequ
 ## Cloner le projet
 
 ```bash
-git clone [https://github.com/bachrilrs/rnaseq_mini_pipeline.git](https://github.com/bachrilrs/rnaseq_mini_pipeline.git)
+git clone https://github.com/bachrilrs/rnaseq_mini_pipeline.git
 cd rnaseq_mini_pipeline
 ```
 
