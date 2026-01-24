@@ -7,13 +7,13 @@ run:
 input:
   counts:
     type: "tsv"
-    path: "data/GSE60450_Lactation-GenewiseCounts.txt"
+    path: 'data/GSE60450_Lactation-GenewiseCounts_filtered.txt'
     sep: "\t"
     gene_id_candidates:
       - "EntrezGeneID"
       - "GeneID"
       - "gene_id"
-    counts_pattern: "^MCL1-([A-Z]{2})_"
+    counts_pattern: "^MCL1[.-]([A-Z]{2})_"
 
   samples:
     type: "geo_series_matrix"

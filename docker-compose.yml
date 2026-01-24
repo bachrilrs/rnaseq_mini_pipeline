@@ -30,8 +30,6 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-rnaseq_password}
       - POSTGRES_DB=${POSTGRES_DB:-rnaseq_db}
       - POSTGRES_PORT=5432
-    volumes:
-      - .:/app
     working_dir: /app
 
 volumes:

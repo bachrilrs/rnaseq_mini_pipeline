@@ -5,7 +5,6 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "rnaseq_mini_pipeline"
 version = "0.1.0"
-description = "A mini RNA-seq data processing pipeline"
 requires-python = ">=3.9"
 authors = [
     { name = "Laroussi Bachri", email = "bachri.laroussi-labid@utoulouse.fr" }

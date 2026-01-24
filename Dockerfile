@@ -13,6 +13,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
+# Installation de R et des packages Bioconductor nécessaires
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    r-base \
+    r-base-dev \
+    libxml2-dev \
+    libcurl4-openssl-dev \
+    libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN R -e "install.packages('BiocManager', repos='https://cloud.r-project.org/')" \
+    && R -e "BiocManager::install(c('edgeR', 'limma'), update = FALSE, ask = FALSE)"
 # 2. Copie des fichiers nécessaires au build
 COPY pyproject.toml .
 COPY src/ ./src/

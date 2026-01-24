@@ -97,7 +97,7 @@ def load_counts_tsv(file_path: str, pattern: str , sep='\t',gene_id_candidates =
     - pd.DataFrame : Processed DataFrame with gene IDs as index and biological sample IDs as columns.
     """
 
-    counts_df = pd.read_csv(file_path, sep=sep)
+    counts_df = pd.read_csv(file_path, sep=sep, index_col=0)
 
     gene_id_candidates = list(gene_id_candidates) # ensure it's a list if not already
     gene_id_col = next((c for c in gene_id_candidates if c in counts_df.columns), None)
@@ -122,7 +122,7 @@ def load_counts_tsv(file_path: str, pattern: str , sep='\t',gene_id_candidates =
     if pattern is None:
         raise ValueError("A pattern must be provided to extract sample IDs from column names.")
     sample_ids = []
-    for col in counts_df.columns:
+    for col in counts_df.columns:  # skip the first column if it's gene_id
         r_match = re.search(pattern, col)
         if not r_match:
             raise ValueError(f"The following sample {col} does not match the expected pattern {pattern}.")

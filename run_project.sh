@@ -6,16 +6,16 @@ YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
-echo -e "${YELLOW}Vérification de la configuration...${NC}"
+echo -e "${YELLOW}Checking configuration ${NC}"
 
 if [ ! -f .env ]; then
-    echo -e "${CYAN}Le fichier .env est absent.${NC}"
+    echo -e "${CYAN}.env not found ${NC}"
     
     if [ -f .env.template ]; then
-        echo -e "${GREEN}Utilisation du template .env.template pour créer .env...${NC}"
+        echo -e "${GREEN}Using .env.template pour créer .env...${NC}"
         cp .env.template .env
     else
-        echo -e "${YELLOW}Avertissement : .env.template absent. Création d'un fichier .env avec des valeurs par défaut.${NC}"
+        echo -e "${YELLOW} Warning : .env.template not found. Creating .env to launch the pipeline. ${NC}"
         cat <<EOF > .env
 POSTGRES_DB=rnaseq_db
 POSTGRES_USER=rnaseq_user
@@ -27,13 +27,13 @@ PIPELINE_VERSION=1.0.0
 EOF
     fi
 else
-    echo -e "${GREEN}Fichier .env détecté.${NC}"
+    echo -e "${GREEN}Success. ${NC}"
 fi
 
 # --- LA SUITE DU SCRIPT ---
-echo -e "${YELLOW}Lancement de Docker...${NC}"
+echo -e "${YELLOW}Starting Docker... ${NC}"
 docker-compose down -v > /dev/null 2>&1
 docker-compose up -d db
 docker-compose run --build --rm pipeline
 
-echo -e "${GREEN}Pipeline exécuté avec succès à $(date)${NC}"
+echo -e "${GREEN} Pipeline finished succesfully at $(date)${NC}"

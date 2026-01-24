@@ -9,15 +9,21 @@ __pycache__/
 venv/
 .env
 
+
+
 # Git
 .git/
 .gitignore
 
 # Outputs / data (à adapter)
+docs
 output/
 reports/
+notebooks/
+tests/
 *.png
 *.pdf
+data/GSE60450_Lactation-GenewiseCounts_filtered.txt
 
 # OS / IDE
 .DS_Store
