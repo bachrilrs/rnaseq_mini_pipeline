@@ -36,7 +36,7 @@ La base de données est structurée pour assurer la traçabilité complète des 
 
 ---
 
-## 🚀 Installation et Lancement (One-Click)
+## Installation et Lancement (One-Click)
 
 Le projet a été conçu pour être testé en une seule commande. Aucun prérequis n'est nécessaire à part Docker.
 
