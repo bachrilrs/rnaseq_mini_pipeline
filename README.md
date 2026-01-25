@@ -54,9 +54,9 @@ chmod +x run_project.sh
 ./run_project.sh
 ```
 
-Linux (Ubuntu/Debian) : Si Docker n'est pas détecté, le script vous proposera de l'installer automatiquement.
 
-macOS : Assurez-vous que Docker Desktop est lancé avant d'exécuter le script.
+
+Linux/macOS : Assurez-vous que Docker Desktop est lancé avant d'exécuter le script.
 
 Cela construira les images Docker, démarrera les services, exécutera le pipeline ETL, et affichera un dashboard SQL avec les KPIs
 
