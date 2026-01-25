@@ -45,13 +45,12 @@ fi
 # 4. Execution
 echo -e "${YELLOW}Starting services...${NC}"
 
-DOCKER_CMD="docker"
-if ! docker ps > /dev/null 2>&1; then DOCKER_CMD="sudo docker"; fi
 
-$DOCKER_CMD-compose down -v > /dev/null 2>&1
-$DOCKER_CMD-compose up -d db
+
+docker compose down -v > /dev/null 2>&1
+docker compose up -d db
 echo -e "${YELLOW}Building and running the Pipeline (R + Python)...${NC}"
-$DOCKER_CMD-compose run --build --rm pipeline
+docker compose run --build --rm pipeline
 
 
 echo -e "${GREEN} Pipeline finished successfully at $(date)${NC}"
