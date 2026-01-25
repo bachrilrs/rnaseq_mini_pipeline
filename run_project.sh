@@ -8,8 +8,7 @@ RED='\033[0;31m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
-echo -e "${CYAN}        RNA-SEQ PIPELINE : SYSTEM CHECK & LAUNCH        ${NC}"
-
+echo -e "${CYAN}RNA-SEQ PIPELINE : SYSTEM CHECK & LAUNCH        ${NC}"
 
 # 1. OS Detection
 OS_TYPE="$(uname -s)"
@@ -21,7 +20,7 @@ if ! command -v docker &> /dev/null; then
     if [ "$OS_TYPE" == "Linux" ]; then
         if command -v apt-get &> /dev/null; then
             read -p "Do you want to install Docker and Docker-Compose automatically? [Y/n] " confirm
-            confirm=${confirm:-Y} # Default to Y
+            confirm=${confirm:-Y}
             
             if [[ $confirm =~ ^[Yy]$ ]]; then
                 echo -e "${CYAN}Updating packages and installing Docker...${NC}"
@@ -29,14 +28,14 @@ if ! command -v docker &> /dev/null; then
                 sudo apt-get install -y docker.io docker-compose
                 sudo usermod -aG docker $USER
                 echo -e "${GREEN}Installation complete!${NC}"
-                echo -e "${YELLOW}IMPORTANT: Please log out and log back in (or restart your terminal) for group changes to take effect, then run this script again.${NC}"
+                echo -e "${YELLOW}IMPORTANT: Please log out and back in for changes to take effect.${NC}"
                 exit 0
             else
-                echo -e "${RED}Installation cancelled. Please install Docker manually to continue.${NC}"
+                echo -e "${RED}Installation cancelled. Please install Docker manually.${NC}"
                 exit 1
             fi
         else
-            echo -e "${RED}Automatic installation only supported on Debian/Ubuntu (apt). Please install Docker manually.${NC}"
+            echo -e "${RED}Automatic installation only supported on Debian/Ubuntu.${NC}"
             exit 1
         fi
     elif [ "$OS_TYPE" == "Darwin" ]; then
@@ -62,7 +61,8 @@ if [ ! -f .env ]; then
     if [ -f .env.template ]; then
         cp .env.template .env
     else
-        cat <<EOF > .env
+
+cat <<EOF > .env
 POSTGRES_DB=rnaseq_db
 POSTGRES_USER=rnaseq_user
 POSTGRES_PASSWORD=rnaseq_password
@@ -78,6 +78,5 @@ docker-compose down -v > /dev/null 2>&1
 docker-compose up -d db
 docker-compose run --build --rm pipeline
 
-echo -e "${GREEN}========================================================${NC}"
+
 echo -e "${GREEN} Pipeline finished successfully at $(date)${NC}"
-echo -e "${GREEN}========================================================${NC}"
