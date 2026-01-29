@@ -122,7 +122,7 @@ def load_counts_tsv(file_path: str, pattern: str , sep='\t',gene_id_candidates =
     if pattern is None:
         raise ValueError("A pattern must be provided to extract sample IDs from column names.")
     sample_ids = []
-    for col in counts_df.columns:  # skip the first column if it's gene_id
+    for col in counts_df.columns:  
         r_match = re.search(pattern, col)
         if not r_match:
             raise ValueError(f"The following sample {col} does not match the expected pattern {pattern}.")

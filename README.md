@@ -54,8 +54,6 @@ chmod +x run_project.sh
 ./run_project.sh
 ```
 
-
-
 Linux/macOS : Assurez-vous que Docker Desktop est lancé avant d'exécuter le script.
 
 Cela construira les images Docker, démarrera les services, exécutera le pipeline ETL, et affichera un dashboard SQL avec les KPIs
