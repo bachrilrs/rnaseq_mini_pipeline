@@ -2,7 +2,7 @@
 
 import pytest
 import os
-from src.utils.config import ConfigManager, DatabaseConfig, PipelineConfig
+from rnaseq.utils.config import ConfigManager, DatabaseConfig, PipelineConfig
 
 
 @pytest.fixture

@@ -20,7 +20,10 @@ dependencies = [
     "sqlalchemy==2.0.19",
     "psycopg2-binary==2.9.7",
     "PyYAML==6.0",
-    "streamlit==1.25.0"
+    "streamlit==1.25.0",
+    "seaborn==0.12.2",
+    "dotenv==0.9.9"
+
 ]
 
 [project.optional-dependencies]
