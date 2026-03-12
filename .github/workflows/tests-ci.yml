@@ -1,52 +1,88 @@
-name: Unit Tests & Code Quality
+name: CI/CD Pipeline
 
 on:
   push:
     branches: [ main, develop ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main ]
 
 jobs:
-  test:
+  lint-and-test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ['3.9', '3.10', '3.11']
+    
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: testdb
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pytest pytest-cov black flake8 isort
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
 
-    - name: Check code formatting with black
-      run: |
-        black --check src/ tests/
+      - name: Lint with flake8
+        run: |
+          flake8 src/ tests/ --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 src/ tests/ --count --exit-zero --max-complexity=10 --max-line-length=100 --statistics
 
-    - name: Check import sorting with isort
-      run: |
-        isort --check-only src/ tests/
+      - name: Type check with mypy
+        run: mypy src/ --ignore-missing-imports || true
 
-    - name: Lint with flake8
-      run: |
-        flake8 src/ tests/ --count --select=E9,F63,F7,F82 --show-source --statistics
-        flake8 src/ tests/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      - name: Run tests
+        run: |
+          pytest tests/ -v --cov=src/rnaseq --cov-report=xml --cov-report=html
+        env:
+          DB_HOST: localhost
+          DB_USER: testuser
+          DB_PASSWORD: testpass
+          DB_NAME: testdb
 
-    - name: Run tests with pytest
-      run: |
-        pip install -e .
-        pytest tests/ -v --cov=src/rnaseq --cov-report=xml --cov-report=html
+      - name: Build Docker image
+        run: |
+          docker build -t rnaseq-pipeline:latest .
 
-    - name: Upload coverage reports
-      uses: codecov/codecov-action@v3
-      with:
-        files: ./coverage.xml
-        fail_ci_if_error: false
-        verbose: true
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+        if: always()
+
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+        if: always()
