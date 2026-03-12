@@ -18,4 +18,4 @@ COPY config.yaml .
 RUN pip install --no-cache-dir -e ".[dev]"
 
 # Run tests
-CMD ["pytest", "tests/", "-v"]
+CMD ["python", "-m", "rnaseq.pipeline"]
