@@ -2,8 +2,8 @@
 
 import streamlit as st
 import pandas as pd
-from src.utils.config import ConfigManager
-from src.rnaseq.db_setup import DatabaseConnection
+from rnaseq.utils.config import ConfigManager
+from rnaseq.db_setup import DatabaseConnection
 
 st.set_page_config(
     page_title="RNA-seq Pipeline Dashboard",
@@ -35,20 +35,16 @@ if page == "Overview":
         db = DatabaseConnection(db_config)
         db.connect()
         
-        # Statistics
         col1, col2, col3 = st.columns(3)
         
-        # Total runs
         runs_result = db.execute_query("SELECT COUNT(*) as count FROM runs")
         with col1:
             st.metric("Total Runs", runs_result[0]['count'] if runs_result else 0)
         
-        # Total samples
         samples_result = db.execute_query("SELECT COUNT(DISTINCT sample_id) as count FROM samples")
         with col2:
             st.metric("Total Samples", samples_result[0]['count'] if samples_result else 0)
         
-        # Total metrics
         metrics_result = db.execute_query("SELECT COUNT(*) as count FROM qc_metrics")
         with col3:
             st.metric("QC Metrics", metrics_result[0]['count'] if metrics_result else 0)
@@ -65,7 +61,6 @@ elif page == "QC Metrics":
         db = DatabaseConnection(db_config)
         db.connect()
         
-        # Query metrics by condition
         results = db.execute_query("""
             SELECT 
                 s.condition,
@@ -95,7 +90,6 @@ elif page == "Sample Details":
         db = DatabaseConnection(db_config)
         db.connect()
         
-        # Query all samples
         results = db.execute_query("""
             SELECT 
                 s.sample_id,
@@ -126,7 +120,6 @@ elif page == "Runs History":
         db = DatabaseConnection(db_config)
         db.connect()
         
-        # Query runs
         results = db.execute_query("""
             SELECT 
                 id,
