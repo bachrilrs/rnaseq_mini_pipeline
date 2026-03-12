@@ -1,23 +1,26 @@
 #!/usr/bin/env python3
 
-import pandas as pd
+import os
+
 import matplotlib.pyplot as plt
-import seaborn as sns
 import numpy as np
-import os 
+import pandas as pd
+import seaborn as sns
 
 from rnaseq.io_setup import *
+
 
 def library_size(df):
     """
     Docstring for library_size
-    
+
     :param pd.DataFrame df: DataFrame containing gene expression counts.
     :return: Series with the sum of counts for each sample (column).
     """
-    return df.sum(axis=0) # series with library sizes
+    return df.sum(axis=0)  # series with library sizes
 
-def zero_fraction(counts_df: pd.DataFrame , axis=0):
+
+def zero_fraction(counts_df: pd.DataFrame, axis=0):
     """
     Compute the percentage of entities whose total count is zero.
 
@@ -30,32 +33,34 @@ def zero_fraction(counts_df: pd.DataFrame , axis=0):
     ----------
     df : pd.DataFrame
         Count matrix with shape (n_genes, n_samples).
-    
+
     Returns
     -------
     float
         Percentage (0-100) of samples (axis=0) or genes (axis=1) whose total count equals 0.
     """
-    return round((counts_df.eq(0).mean(axis=0) * 100),2)
+    return round((counts_df.eq(0).mean(axis=0) * 100), 2)
+
 
 def expressed_gene(counts_df: pd.DataFrame) -> pd.DataFrame:
     """
     Docstring for expressed_Gene
-    
-    param: counts_df: 
-    
+
+    param: counts_df:
+
     return:
     A dataframe with expressed genes
     """
     return counts_df.gt(0).sum(axis=0)
 
+
 def log_transform(counts_df, base="log1p"):
     """
     Log-transform counts.
-    
-    :param counts_df: 
+
+    :param counts_df:
     :type counts_df: pd.DataFrame
-    :param base: 
+    :param base:
     :type base: str
 
     return:
@@ -65,15 +70,16 @@ def log_transform(counts_df, base="log1p"):
         log_df = np.log1p(counts_df)
         return log_df
     elif base == "log2":
-        log_df = np.log2(counts_df+1) # avoid log(0)--> -inf
+        log_df = np.log2(counts_df + 1)  # avoid log(0)--> -inf
         return log_df
     elif base == "log10":
-        log_df = np.log10(counts_df+1) # avoid log(0)--> -inf
+        log_df = np.log10(counts_df + 1)  # avoid log(0)--> -inf
         return log_df
     else:
         raise ValueError("Unsupported log base. Use 'log1p' 'log10' or 'log2'.")
 
-def plot_log_boxplot(counts_df: pd.DataFrame,output_dir: str) -> None:
+
+def plot_log_boxplot(counts_df: pd.DataFrame, output_dir: str) -> None:
     os.makedirs(output_dir, exist_ok=True)
 
     log_df = log_transform(counts_df)
@@ -87,11 +93,14 @@ def plot_log_boxplot(counts_df: pd.DataFrame,output_dir: str) -> None:
     plt.savefig(os.path.join(output_dir, "log_counts_boxplot.png"))
     plt.close()
 
-def plot_library_size(counts_df: pd.DataFrame,samples_df: pd.DataFrame,output_dir: str) -> None:
+
+def plot_library_size(counts_df: pd.DataFrame, samples_df: pd.DataFrame, output_dir: str) -> None:
     os.makedirs(output_dir, exist_ok=True)
 
     libsize = library_size(counts_df)
-    plot_df = pd.DataFrame({"sample_id": libsize.index,"library_size": libsize.values}).merge(samples_df[["sample_id", "condition"]],on="sample_id")
+    plot_df = pd.DataFrame({"sample_id": libsize.index, "library_size": libsize.values}).merge(
+        samples_df[["sample_id", "condition"]], on="sample_id"
+    )
 
     plt.figure(figsize=(10, 6))
     sns.barplot(data=plot_df, x="sample_id", y="library_size", hue="condition")
@@ -101,7 +110,8 @@ def plot_library_size(counts_df: pd.DataFrame,samples_df: pd.DataFrame,output_di
     plt.savefig(os.path.join(output_dir, "library_size.png"))
     plt.close()
 
-def plot_sample_correlation(counts_df: pd.DataFrame,output_dir: str) -> pd.DataFrame:
+
+def plot_sample_correlation(counts_df: pd.DataFrame, output_dir: str) -> pd.DataFrame:
     os.makedirs(output_dir, exist_ok=True)
 
     corr_df = log_transform(counts_df).corr()
@@ -114,6 +124,7 @@ def plot_sample_correlation(counts_df: pd.DataFrame,output_dir: str) -> pd.DataF
     plt.close()
 
     return corr_df
+
 
 def build_qc_table(counts_df, samples_df) -> pd.DataFrame:
     """
@@ -143,7 +154,8 @@ def build_qc_table(counts_df, samples_df) -> pd.DataFrame:
 
     return qc_df
 
-def save_qc_table(qc_df: pd.DataFrame,output_dir: str,filename: str = "qc_table.csv") -> None:
+
+def save_qc_table(qc_df: pd.DataFrame, output_dir: str, filename: str = "qc_table.csv") -> None:
     """
     Save the QC table to a CSV file.
 
@@ -155,9 +167,10 @@ def save_qc_table(qc_df: pd.DataFrame,output_dir: str,filename: str = "qc_table.
         Path to save the QC table CSV file.
     """
     os.makedirs(output_dir, exist_ok=True)
-    out_path = os.path.join(output_dir, filename) # join the directory and filename
-    
-    qc_df.to_csv(out_path, index=True) # save with index (sample_id)
+    out_path = os.path.join(output_dir, filename)  # join the directory and filename
+
+    qc_df.to_csv(out_path, index=True)  # save with index (sample_id)
+
 
 def qc_all(counts_df: pd.DataFrame, samples_df: pd.DataFrame, output_dir: str) -> pd.DataFrame:
     """
@@ -170,7 +183,7 @@ def qc_all(counts_df: pd.DataFrame, samples_df: pd.DataFrame, output_dir: str) -
     samples_df : pd.DataFrame
         DataFrame containing sample annotations.
     output_dir : str
-        Directory to save QC output files.  
+        Directory to save QC output files.
     """
 
     qc_dir = os.path.join(output_dir, "qc")
