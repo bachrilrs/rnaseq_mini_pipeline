@@ -9,13 +9,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Python dependencies
-COPY pyproject .
-RUN pip install --no-cache-dir -e .
-
-# Copy code
+# Copy project files
+COPY pyproject.toml .
 COPY src/ ./src/
 COPY config.yaml .
 
-# Run pipeline
-CMD ["python", "-m", "rnaseq.pipeline"]
+# Install dependencies + package
+RUN pip install --no-cache-dir -e ".[dev]"
+
+# Run tests
+CMD ["pytest", "tests/", "-v"]
