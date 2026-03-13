@@ -5,97 +5,191 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Pandas](https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white)](https://pandas.pydata.org/)
 
-## Présentation du Projet
+## Project Overview
 
-Ce projet est un pipeline **ETL (Extract, Transform, Load)** industrialisé dédié au contrôle qualité (QC) de données de séquençage d'ARN (RNA-seq). À partir du dataset public **GSE60450**, le pipeline automatise l'ingestion de données brutes, leur validation, et leur stockage dans une base de données relationnelle.
+This project is an industrialized **ETL (Extract, Transform, Load) pipeline** dedicated to quality control (QC) of RNA-seq sequencing data. Using the public dataset **GSE60450**, the pipeline automates the ingestion of raw data, validates it, and stores it in a relational database.
 
-L'objectif est de démontrer une maîtrise de l'orchestration de services (Docker Compose), du développement Python pour la donnée et de l'automatisation de workflows complexes (DevOps/Data Engineering).
-
----
-
-## Architecture et Fonctionnalités
-
-* **Orchestration Multi-Services** : Utilisation de Docker Compose pour isoler l'application Python du serveur PostgreSQL.
-* **Automatisation "Zero-Friction"** : Un script de lancement intelligent (`run_project.sh`) gère la configuration des variables d'environnement et le déploiement.
-* **Synchronisation Robuste** : L'entrypoint utilise des sockets réseau pour garantir que PostgreSQL est prêt avant l'insertion des données.
-* **Pipeline ETL Pipeline** :
-* **Extract** : Ingestion de fichiers TSV via Pandas.
-* **Transform** : Nettoyage des métadonnées GEO, validation des types et calculs de qualité.
-* **Load** : Ingestion sécurisée via `psycopg2` avec gestion des transactions atomiques.
-* **Observabilité** : Affichage automatique d'un **Dashboard de KPIs** SQL dès la fin du traitement.
+The objective is to demonstrate mastery of service orchestration (Docker Compose), Python development for data processing, and automation of complex workflows (DevOps/Data Engineering).
 
 ---
 
-## Modèle de Données (SQL)
+## Architecture & Features
 
-La base de données est structurée pour assurer la traçabilité complète des analyses :
-
-* **`runs`** : Historique des exécutions du pipeline (version du code, dataset source, horodatage).
-* **`samples`** : Référentiel des échantillons (Conditions biologiques, GEO Accession).
-* **`qc_metrics`** : Métriques techniques (Library Size, Mean Counts) liées à un échantillon et un run spécifiques.
+* **Multi-Service Orchestration** : Docker Compose isolates the Python application from the PostgreSQL server.
+* **Zero-Friction Automation** : An intelligent launch script (`run_project.sh`) manages environment variables and deployment.
+* **Robust Synchronization** : The entrypoint uses network sockets to ensure PostgreSQL is ready before data insertion.
+* **ETL Pipeline** :
+  * **Extract** : Ingest TSV files via Pandas.
+  * **Transform** : Clean GEO metadata, validate data types, and compute quality metrics.
+  * **Load** : Secure insertion via `psycopg2` with atomic transaction handling.
+* **Observability** : Automatic **KPI Dashboard** displayed in SQL format at the end of processing.
 
 ---
 
-## Installation et Lancement (One-Click)
+## Data Model (SQL)
 
-Le projet a été conçu pour être testé en une seule commande. Aucun prérequis n'est nécessaire à part Docker.
+The database is structured to ensure complete traceability of analyses:
 
-## Cloner le projet
+* **`runs`** : Pipeline execution history (code version, source dataset, timestamp).
+* **`samples`** : Sample registry (Biological conditions, GEO Accession).
+* **`qc_metrics`** : Technical metrics (Library Size, Mean Counts) linked to a sample and pipeline run.
+
+---
+
+## Installation & Launch (One-Click)
+
+The project is designed to be tested with a single command. Only Docker is required.
+
+### Clone the Repository
 
 ```bash
 git clone https://github.com/bachrilrs/rnaseq_mini_pipeline.git
 cd rnaseq_mini_pipeline
 ```
 
-## Lancer le pipeline
+### Launch the Pipeline
 
 ```bash
 chmod +x run_project.sh
 ./run_project.sh
 ```
 
-Linux/macOS : Assurez-vous que Docker Desktop est lancé avant d'exécuter le script.
+**Note** : On Linux/macOS, ensure Docker Desktop is running before executing the script.
 
-Cela construira les images Docker, démarrera les services, exécutera le pipeline ETL, et affichera un dashboard SQL avec les KPIs
+This will:
 
-Dashboard de KPIs
+* Build Docker images
 
-À la fin de l'exécution, un résumé statistique s'affiche automatiquement dans votre terminal :
+* Start services
 
-Nombre total de runs et d'échantillons traités.
+* Run the ETL pipeline
 
-Moyenne de la taille des librairies par condition biologique (Treatment vs Control).
+* Display a SQL dashboard with KPIs
 
-Console Interactive
+* Open an interactive PostgreSQL console
 
-Le script run_project.sh vous laisse directement la main sur une console PostgreSQL interactive à la fin du processus. Vous pouvez tester vos propres requêtes immédiatement :
+---
 
-```sql
--- Exemple : Vérifier les 5 premiers échantillons
-SELECT * FROM samples LIMIT 5;
-````
+## KPI Dashboard
 
--- Quitter la console
-\q
+At the end of execution, a statistical summary automatically displays in your terminal:
 
-## Sécurité des Injections SQL
+* Total number of runs and samples processed
 
-Lors de l'insertion des données dans la base PostgreSQL, le pipeline utilise des requêtes paramétrées avec `psycopg2` pour prévenir les risques d'injection SQL.
-Par exemple, au lieu de construire une requête SQL en concaténant des chaînes de caractères, le code utilise des placeholders `%s` :
+* Average library size per biological condition (Virgin vs Lactation)
 
-```python
-insert_query = """INSERT INTO samples (sample_id, condition, replicate, geo_accession)
-VALUES (%s, %s, %s, %s)"""
-cursor.execute(insert_query, (sample_id, condition, replicate, geo_accession))
+
+Example output:
+
+```
+=== Pipeline Complete ===
+
+1. Pipeline Summary:
+ total_runs | total_samples | qc_metrics
+------------+---------------+----------
+     1      |      12       |    12
+
+2. Average library size by condition:
+   condition  | count | avg_reads
+--------------+-------+----------
+  lactation   |   6   | 2500000
+  virgin      |   6   | 2300000
 ```
 
-Stack Technique
-Langage : Python 3.11 (Pandas, SQLAlchemy, PyYAML)
+---
 
-Base de données : PostgreSQL 16
+## Interactive Console
 
-Infrastructure : Docker, Docker Compose.
+The `run_project.sh` script leaves you at an interactive PostgreSQL console at the end of the process. You can test your own queries immediately:
 
-Contact
-LinkedIn : [Laroussi Bachri](https://www.linkedin.com/in/laroussi-bachri)
-GitHub : [bachrilrs](https://github.com/bachrilrs)
+```sql
+-- Example: Check the first 5 samples
+SELECT * FROM samples LIMIT 5;
+
+-- Check all conditions
+SELECT DISTINCT condition FROM samples;
+
+-- Exit the console
+\q
+```
+
+### Database Connection Details
+
+If you want to connect manually after the pipeline finishes:
+
+```bash
+# From the interactive bash shell:
+psql -h db -U rnaseq_user -d rnaseq_db
+
+# Password: rnaseq_password
+```
+
+---
+
+## SQL Injection Prevention
+
+When inserting data into PostgreSQL, the pipeline uses parameterized queries with `psycopg2` to prevent SQL injection risks.
+
+Instead of concatenating strings, the code uses placeholders `%s`:
+
+```python
+insert_query = """INSERT INTO samples (sample_name, condition, replicate)
+VALUES (%s, %s, %s)"""
+cursor.execute(insert_query, (sample_name, condition, replicate))
+```
+
+This ensures data is safely escaped and prevents malicious SQL execution.
+
+---
+
+## Tech Stack
+
+* **Language** : Python 3.11 (Pandas, SQLAlchemy, PyYAML)
+
+* **Database** : PostgreSQL 16
+
+* **Infrastructure** : Docker, Docker Compose
+
+* **R Preprocessing** : R 4.5.0 (edgeR, ggplot2)
+
+
+*--
+
+
+## Environment Variables
+
+The pipeline uses the following environment variables (default values shown):
+
+```env
+POSTGRES_DB=rnaseq_db
+POSTGRES_USER=rnaseq_user
+POSTGRES_PASSWORD=rnaseq_password
+POSTGRES_HOST=db
+POSTGRES_PORT=5432
+```
+
+These are automatically set via `docker-compose.yml` and `.env`.
+
+---
+
+## Troubleshooting
+
+### Docker not running
+
+Ensure Docker Desktop is launched before executing `run_project.sh`.
+
+### Database connection timeout
+
+Wait 10-15 seconds for PostgreSQL to initialize. The script includes automatic retry logic.
+
+### Permission denied on `run_project.sh`
+
+Run: `chmod +x run_project.sh`
+
+---
+
+## Contact
+
+* **LinkedIn** : [Laroussi Bachri](https://www.linkedin.com/in/laroussi*bachri)
+
+* **GitHub** : [bachrilrs](https://github.com/bachrilrs)
