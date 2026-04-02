@@ -153,22 +153,7 @@ This ensures data is safely escaped and prevents malicious SQL execution.
 * **R Preprocessing** : R 4.5.0 (edgeR, ggplot2)
 
 
-*--
 
-
-## Environment Variables
-
-The pipeline uses the following environment variables (default values shown):
-
-```env
-POSTGRES_DB=rnaseq_db
-POSTGRES_USER=rnaseq_user
-POSTGRES_PASSWORD=rnaseq_password
-POSTGRES_HOST=db
-POSTGRES_PORT=5432
-```
-
-These are automatically set via `docker-compose.yml` and `.env`.
 
 ---
 
